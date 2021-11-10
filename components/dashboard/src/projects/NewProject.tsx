@@ -45,6 +45,8 @@ export default function NewProject() {
                 setProvider("gitlab.com");
             } else if (user.identities.find(i => i.authProviderId === "Public-GitHub")) {
                 setProvider("github.com");
+            } else if (user.identities.find(i => i.authProviderId == "Public-Bitbucket")) {
+                setProvider("bitbucket.org");
             }
         }
     }, [user]);
@@ -85,7 +87,7 @@ export default function NewProject() {
     }, [selectedAccount]);
 
     useEffect(() => {
-        if (!provider) {
+        if (!provider || isBitbucket()) {
             return;
         }
         (async () => {
@@ -100,9 +102,10 @@ export default function NewProject() {
     }, [provider]);
 
     const isGitHub = () => provider === "github.com";
+    const isBitbucket = () => provider == "bitbucket.org";
 
     const updateReposInAccounts = async (installationId?: string) => {
-        if (!provider) {
+        if (!provider || isBitbucket()) {
             return [];
         }
         try {
@@ -159,7 +162,7 @@ export default function NewProject() {
     }
 
     const createProject = async (teamOrUser: Team | User, selectedRepo: string) => {
-        if (!provider) {
+        if (!provider || isBitbucket()) {
             return;
         }
         const repo = reposInAccounts.find(r => r.account === selectedAccount && r.path === selectedRepo);
@@ -388,17 +391,25 @@ export default function NewProject() {
         </>)
     };
 
-    return (<div className="flex flex-col w-96 mt-24 mx-auto items-center">
-        <h1>New Project</h1>
-        <p className="text-gray-500 text-center text-base">Select a Git repository on <strong>{provider}</strong>. (<a className="gp-link cursor-pointer" onClick={() => setShowGitProviders(true)}>change</a>)</p>
+    if (isBitbucket()) {
+        return (<div className="flex flex-col w-96 mt-24 mx-auto items-center">
+            <h1>We are still working working on Bitbucket support for Projects</h1>
+            <p className="text-gray-500 text-center text-base">Continue to <a href="/workspaces" className="gp-link">workspaces</a>, or login with <a href={gitpodHostUrl.asApiLogout().toString()} className="gp-link">GitHub</a> or <a href={gitpodHostUrl.asApiLogout().toString()} className="gp-link">GitLab</a> to use Projects</p>
+        </div>);
 
-        {!selectedRepo && renderSelectRepository()}
+    } else {
+        return (<div className="flex flex-col w-96 mt-24 mx-auto items-center">
+            <h1>New Project</h1>
+            <p className="text-gray-500 text-center text-base">Select a Git repository on <strong>{provider}</strong>. (<a className="gp-link cursor-pointer" onClick={() => setShowGitProviders(true)}>change</a>)</p>
 
-        {selectedRepo && !selectedTeamOrUser && renderSelectTeam()}
+            {!selectedRepo && renderSelectRepository()}
 
-        {selectedRepo && selectedTeamOrUser && (<div></div>)}
+            {selectedRepo && !selectedTeamOrUser && renderSelectTeam()}
 
-    </div>);
+            {selectedRepo && selectedTeamOrUser && (<div></div>)}
+
+        </div>);
+    }
 
 }
 
