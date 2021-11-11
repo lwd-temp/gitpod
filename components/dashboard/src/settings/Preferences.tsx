@@ -36,7 +36,7 @@ export default function Preferences() {
         setDefaultIde(value);
     }
 
-    const [defaultDesktopIde, setDefaultDesktopIde] = useState<string>(user?.additionalData?.ideSettings?.defaultDesktopIde || 'intellij');
+    const [defaultDesktopIde, setDefaultDesktopIde] = useState<string>(user?.additionalData?.ideSettings?.defaultDesktopIde || 'code-desktop');
     const actuallySetDefaultDesktopIde = async (value: string) => {
         const additionalData = user?.additionalData || {};
         const settings = additionalData.ideSettings || {};
@@ -98,6 +98,17 @@ export default function Preferences() {
             </div>
             {useDesktopIde && <>
                 <div className="mt-4 space-x-4 flex">
+                    <SelectableCard className="w-36 h-40" title="VS Code Desktop" selected={defaultDesktopIde === 'code-desktop'} onClick={() => actuallySetDefaultDesktopIde('code-desktop')}>
+                        <div className="flex justify-center mt-3">
+                            <img className="w-16 filter-grayscale self-center" src={vscode} />
+                        </div>
+                    </SelectableCard>
+                    <SelectableCard className="w-36 h-40" title="VS Code Desktop" selected={defaultDesktopIde === 'code-desktop-insiders'} onClick={() => actuallySetDefaultDesktopIde('code-desktop-insiders')}>
+                        <div className="flex justify-center mt-3">
+                            <img className="w-16 filter-grayscale self-center" src={vscode} />
+                        </div>
+                        <PillLabel type="warn" className="font-semibold mt-2 py-0.5 px-2 self-center">Insiders</PillLabel>
+                    </SelectableCard>
                     <SelectableCard className="w-36 h-40" title="IntelliJ IDEA" selected={defaultDesktopIde === 'intellij'} onClick={() => actuallySetDefaultDesktopIde('intellij')}>
                         <div className="flex justify-center mt-3">
                             <img className="w-16 filter-grayscale self-center" src={ideaLogo} />
