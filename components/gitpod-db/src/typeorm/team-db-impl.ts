@@ -110,6 +110,7 @@ export class TeamDBImpl implements TeamDB {
         const teamRepo = await this.getTeamRepo();
         const membershipRepo = await this.getMembershipRepo();
         const memberships = await membershipRepo.find({ userId, deleted: false, role: 'owner' });
+        console.log("memberships >>> ", memberships);
         const teams = await teamRepo.findByIds(memberships.map(m => m.teamId));
         return teams.filter(t => !t.deleted);
     }

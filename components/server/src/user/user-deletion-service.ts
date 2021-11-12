@@ -145,7 +145,7 @@ export class UserDeletionService {
 
     protected async deleteTeams(userId: string) {
         const ownedTeams = await this.teamDb.findTeamsByUserAsOwner(userId);
-        const soleOwner = ownedTeams.find(teams => team)
+        // const soleOwner = ownedTeams.find(teams => team)
         console.log("ownedTeams >>> ", ownedTeams);
     }
 
