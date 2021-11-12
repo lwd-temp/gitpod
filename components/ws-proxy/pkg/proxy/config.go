@@ -72,6 +72,7 @@ func (c *HostBasedIngressConfig) Validate() error {
 type WorkspacePodConfig struct {
 	TheiaPort       uint16 `json:"theiaPort"`
 	SupervisorPort  uint16 `json:"supervisorPort"`
+	// SupervisorImage is deprecated
 	SupervisorImage string `json:"supervisorImage"`
 }
 
@@ -84,7 +85,6 @@ func (c *WorkspacePodConfig) Validate() error {
 	err := validation.ValidateStruct(c,
 		validation.Field(&c.TheiaPort, validation.Required),
 		validation.Field(&c.SupervisorPort, validation.Required),
-		validation.Field(&c.SupervisorImage, validation.Required),
 	)
 	if err != nil {
 		return err
