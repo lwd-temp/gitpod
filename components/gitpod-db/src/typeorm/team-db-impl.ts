@@ -103,7 +103,7 @@ export class TeamDBImpl implements TeamDB {
         const membershipRepo = await this.getMembershipRepo();
         const memberships = await membershipRepo.find({ userId, deleted: false });
         const teams = await teamRepo.findByIds(memberships.map(m => m.teamId));
-        return teams.filter(t => !t.deleted);
+        return teams.filter(t => !t.markedDeleted);
     }
 
     public async findTeamsByUserAsSoleOwner(userId: string): Promise<Team[]> {
@@ -117,7 +117,7 @@ export class TeamDBImpl implements TeamDB {
 // @ts-ignore
         const teams = await teamRepo.findByIds(soleOwnedTeamIds.map(m => m.teamId));
 
-        return teams.filter(t => !t.deleted);
+        return teams.filter(t => !t.markedDeleted);
     }
 
     public async createTeam(userId: string, name: string): Promise<Team> {

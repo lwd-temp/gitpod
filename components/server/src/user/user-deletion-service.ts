@@ -74,10 +74,10 @@ export class UserDeletionService {
             this.userStorageResourcesDb.deleteAllForUser(user.id),
             // Bucket
             this.deleteUserBucket(id),
-            // Team memberships
-            this.deleteTeamMemberships(id),
             // Owned teams
             this.deleteTeams(id),
+            // Team memberships
+            this.deleteTeamMemberships(id),
         ]);
 
         // Track the deletion Event for Analytics Purposes
@@ -139,7 +139,6 @@ export class UserDeletionService {
 
     protected async deleteTeamMemberships(userId: string) {
         const teams = await this.teamDb.findTeamsByUser(userId);
-        console.log(">>> ", teams);
         await Promise.all(teams.map(t => this.teamDb.removeMemberFromTeam(userId, t.id)));
     }
 
