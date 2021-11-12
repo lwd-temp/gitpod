@@ -76,6 +76,8 @@ export class UserDeletionService {
             this.deleteUserBucket(id),
             // Team memberships
             this.deleteTeamMemberships(id),
+            // Owned teams
+            this.deleteTeams(id),
         ]);
 
         // Track the deletion Event for Analytics Purposes
@@ -137,7 +139,14 @@ export class UserDeletionService {
 
     protected async deleteTeamMemberships(userId: string) {
         const teams = await this.teamDb.findTeamsByUser(userId);
+        console.log(">>> ", teams);
         await Promise.all(teams.map(t => this.teamDb.removeMemberFromTeam(userId, t.id)));
+    }
+
+    protected async deleteTeams(userId: string) {
+        const ownedTeams = await this.teamDb.findTeamsByUserAsOwner(userId);
+        const soleOwner = ownedTeams.find(teams => team)
+        console.log("ownedTeams >>> ", ownedTeams);
     }
 
     anonymizeWorkspace(ws: Workspace) {

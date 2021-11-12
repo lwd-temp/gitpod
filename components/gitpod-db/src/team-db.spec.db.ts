@@ -62,6 +62,23 @@ import { DBIdentity } from './typeorm/entity/db-identity';
         expect(members[0].primaryEmail).to.eq('tom@example.com');
     }
 
+    @test(timeout(10000))
+    public async findTeamMembersByUserAsOwner() {
+        const user = await this.userDb.newUser();
+        user.identities.push({ authProviderId: 'GitHub', authId: '2345', authName: 'Nana', primaryEmail: 'nana@example.com' });
+        await this.userDb.storeUser(user);
+
+        const ownTeam = await this.db.createTeam(user.id, 'My Own Team');
+        this.db.addMemberToTeam('3456', 'My Own Team');
+        this.db.setTeamMemberRole('3456', ownTeam.id, 'owner');
+
+        const teams = await this.db.findTeamsByUserAsOwner(ownTeam.id);
+        console.log(teams);
+
+        // expect(teams.length).to.eq(1);
+        // expect(teams[0].id).to.eq(ownTeam.id);
+    }
+
 }
 
 module.exports = new TeamDBSpec()

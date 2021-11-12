@@ -106,6 +106,14 @@ export class TeamDBImpl implements TeamDB {
         return teams.filter(t => !t.deleted);
     }
 
+    public async findTeamsByUserAsOwner(userId: string): Promise<Team[]> {
+        const teamRepo = await this.getTeamRepo();
+        const membershipRepo = await this.getMembershipRepo();
+        const memberships = await membershipRepo.find({ userId, deleted: false, role: 'owner' });
+        const teams = await teamRepo.findByIds(memberships.map(m => m.teamId));
+        return teams.filter(t => !t.deleted);
+    }
+
     public async createTeam(userId: string, name: string): Promise<Team> {
         if (!name) {
             throw new Error('Team name cannot be empty');
