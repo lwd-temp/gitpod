@@ -106,12 +106,17 @@ export class TeamDBImpl implements TeamDB {
         return teams.filter(t => !t.deleted);
     }
 
-    public async findTeamsByUserAsOwner(userId: string): Promise<Team[]> {
+    public async findTeamsByUserAsSoleOwner(userId: string): Promise<Team[]> {
         const teamRepo = await this.getTeamRepo();
         const membershipRepo = await this.getMembershipRepo();
-        const memberships = await membershipRepo.find({ userId, deleted: false, role: 'owner' });
-        console.log("memberships >>> ", memberships);
-        const teams = await teamRepo.findByIds(memberships.map(m => m.teamId));
+
+        const soleOwnedTeamIds = await membershipRepo.query(`SELECT tm_2.teamId FROM d_b_team_membership tm_1
+        JOIN d_b_team_membership tm_2 ON tm_1.userId = ? AND tm_1.teamId=tm_2.teamId AND tm_2.role = 'owner' GROUP BY tm_2.teamId HAVING COUNT(tm_2.teamId) = 1;`, [userId]);
+
+        console.log("soleOwnedTeamIds >>> ", soleOwnedTeamIds);
+// @ts-ignore
+        const teams = await teamRepo.findByIds(soleOwnedTeamIds.map(m => m.teamId));
+
         return teams.filter(t => !t.deleted);
     }
 
